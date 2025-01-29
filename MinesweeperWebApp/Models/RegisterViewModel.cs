@@ -1,4 +1,4 @@
-﻿namespace RegisterAndLoginApp.Models
+﻿namespace MinesweeperWebApp.Models
 {
     public class GroupViewModel
     {

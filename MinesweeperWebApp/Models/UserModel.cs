@@ -3,7 +3,7 @@ using System;
 using System.Security.Cryptography;
 
 
-namespace RegisterAndLoginApp.Models
+namespace MinesweeperWebApp.Models
 {
     public class UserModel
     {
