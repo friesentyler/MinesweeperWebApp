@@ -18,6 +18,11 @@ namespace MinesweeperWebApp.Controllers
             return View();
         }
 
+        public IActionResult DELETECONTROLLER()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();
