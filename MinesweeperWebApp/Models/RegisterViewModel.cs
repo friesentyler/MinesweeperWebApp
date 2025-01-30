@@ -1,4 +1,6 @@
-﻿namespace MinesweeperWebApp.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MinesweeperWebApp.Models
 {
     public class GroupViewModel
     {
@@ -8,14 +10,31 @@
 
     public class RegisterViewModel
     {
+        [Required]
+        [StringLength(25)]
         public string Firstname { get; set; }
+        [Required]
+        [StringLength(25)]
         public string Lastname { get; set; }
+        [Required]
+        [StringLength(7)]
         public string Sex { get; set; }
+        [Required]
+        [Range(0, 120, ErrorMessage = "{0} must be between {1} and {2}")]
         public int Age { get; set; }
+        [Required]
+        [StringLength(25)]
         public string State { get; set; }
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
+        [Required]
+        [StringLength(25)]
         public string Username { get; set; }
+        [Required]
+        [StringLength(25)]
         public string Password { get; set; }
+        [Required]
         public List<GroupViewModel> Groups { get; set; }
 
         public RegisterViewModel() 
