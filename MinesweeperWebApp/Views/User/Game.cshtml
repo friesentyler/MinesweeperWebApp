@@ -1,0 +1,21 @@
+﻿@using ServiceStack.Text
+
+<h1>Game Page</h1>
+<h1>This is where the game will go</h1>
+
+@{
+    string user = Context.Session.GetString("User");
+
+    var userString = ServiceStack.Text.JsonSerializer.SerializeToString(user);
+    if (string.IsNullOrEmpty(user))
+    {
+        <p>You are not logged in</p>
+    }
+    else
+    {
+        <p>You are logged in as @userString</p>
+
+        <!-- Print formatted JSON -->
+        <pre>@user</pre>
+    }
+}

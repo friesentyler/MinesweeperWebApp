@@ -1,36 +1,47 @@
-namespace MinesweeperWebApp
+using MinesweeperWebApp.Data;
+using MinesweeperWebApp.Models;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// COMMENT AND UNCOMMENT AS NEEDED 
+// TO TOGGLE BETWEEN USER DAO AND USER COLLECTION FOR NON-DB TESTING
+
+builder.Services.AddSingleton<IUserManager, UserCollection>();
+//builder.Services.AddSingleton<IUserManager, UserDAO>();
+
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+
+// Add session services
+builder.Services.AddDistributedMemoryCache(); // For storing session data in memory
+builder.Services.AddSession(options =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set the session timeout
+    options.Cookie.HttpOnly = true; // Make the session cookie HTTP only
+    options.Cookie.IsEssential = true; // Make the session cookie essential
+});
 
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
+// Configure the HTTP request pipeline.
+var app = builder.Build();
 
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
-
-            app.Run();
-        }
-    }
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts(); // Enable HSTS for production
 }
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+// Enable session management
+app.UseSession(); // Added to enable sessions and keep login state
+
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();

@@ -1,45 +1,50 @@
-﻿using MySql.Data.MySqlClient;
+﻿
+using Microsoft.Data.SqlClient;
+using MinesweeperWebApp.Models;
 
-namespace MinesweeperWebApp.Models
+namespace MinesweeperWebApp.Data
 {
-    public class UsersDAO : IUserManager
+    public class UserDAO : IUserManager
     {
-        //string connectionString = @"Data Source=172.24.94.226,8889;Initial Catalog=Test;User ID=tyler;Password=tyler;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-        string connectionString = "datasource=172.24.94.226;port=8889;username=tyler;password=tyler;database=Test;";
-
-        // from databases class
-        //string connectionString = "datasource=172.24.94.226;port=8889;username=tyler;password=tyler;database=sys;";
+        private string _connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=MineSweeperWebDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
         public int AddUser(UserModel user)
         {
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                string query = @"INSERT INTO users (Username, PasswordHash, Salt, `Groups`)
+                string query = @"
+                INSERT INTO Users (Username, PasswordHash, Salt, Groups)
                 VALUES (@Username, @PasswordHash, @Salt, @Groups);
-                SELECT LAST_INSERT_ID();";
+                SELECT SCOPE_IDENTITY();";
 
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Username", user.Username);
                     command.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
                     command.Parameters.AddWithValue("@Salt", user.Salt);
                     command.Parameters.AddWithValue("@Groups", user.Groups);
 
+                    // Execute the query and get the newly inserted ID
                     object result = command.ExecuteScalar();
                     return Convert.ToInt32(result);
                 }
             }
         }
 
+
         public int CheckCredentials(string username, string password)
         {
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
+
+                // Find a user with the given username
                 string query = "SELECT * FROM Users WHERE Username = @Username";
-                MySqlCommand command = new MySqlCommand(query, connection);
+                SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@Username", username);
-                MySqlDataReader reader = command.ExecuteReader();
+                SqlDataReader reader = command.ExecuteReader();
+
+                // If the user is found, verify the password hash and return the user ID
                 if (reader.Read())
                 {
                     UserModel user = new UserModel
@@ -47,70 +52,50 @@ namespace MinesweeperWebApp.Models
                         Id = reader.GetInt32(reader.GetOrdinal("Id")),
                         Username = reader.GetString(reader.GetOrdinal("Username")),
                         PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
-                        //Salt = reader.GetString(reader.GetOrdinal("Salt")),
-                        Salt = reader["Salt"] as byte[],
+                        Salt = (byte[])reader["Salt"],
                         Groups = reader.GetString(reader.GetOrdinal("Groups"))
                     };
+
                     bool valid = user.VerifyPassword(password);
-                    if (valid)
+                    if (valid == true)
                     {
-                        return user.Id;
+                        return user.Id; // User found and password is correct
                     }
                     else
                     {
-                        return 0;
+                        return 0; // User found but password is incorrect
                     }
                 }
-                return 0;
+                return 0; // User not found
             }
         }
 
-        public UserModel GetUserByUsername(string username)
-        {
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                connection.Open();
-                string query = "SELECT * FROM Users WHERE Username = @Username";
-                MySqlCommand command = new MySqlCommand(query, connection);
-                command.Parameters.AddWithValue("@Username", username);
-                MySqlDataReader reader = command.ExecuteReader();
-                if (reader.Read())
-                {
-                    UserModel user = new UserModel
-                    {
-                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                        Username = reader.GetString(reader.GetOrdinal("Username")),
-                        PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
-                        Salt = reader["Salt"] as byte[],
-                        Groups = reader.GetString(reader.GetOrdinal("Groups"))
-                    };
-                    return user;
-                }
-                return null;
-            }
-        }
 
         public void DeleteUser(UserModel user)
         {
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            // Delete the matching user record
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
                 string query = "DELETE FROM Users WHERE Id = @Id";
-                MySqlCommand command = new MySqlCommand(query, connection);
+                SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@Id", user.Id);
                 command.ExecuteNonQuery();
             }
         }
 
+
         public List<UserModel> GetAllUsers()
         {
+            // Search for all users
             List<UserModel> users = new List<UserModel>();
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
                 string query = "SELECT * FROM Users";
-                MySqlCommand command = new MySqlCommand(query, connection);
-                MySqlDataReader reader = command.ExecuteReader();
+                SqlCommand command = new SqlCommand(query, connection);
+                SqlDataReader reader = command.ExecuteReader();
+
                 while (reader.Read())
                 {
                     UserModel user = new UserModel
@@ -118,8 +103,7 @@ namespace MinesweeperWebApp.Models
                         Id = reader.GetInt32(reader.GetOrdinal("Id")),
                         Username = reader.GetString(reader.GetOrdinal("Username")),
                         PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
-                        //Salt = reader.GetString(reader.GetOrdinal("Salt")),
-                        Salt = reader["Salt"] as byte[],
+                        Salt = (byte[])reader["Salt"],
                         Groups = reader.GetString(reader.GetOrdinal("Groups"))
                     };
                     users.Add(user);
@@ -128,15 +112,18 @@ namespace MinesweeperWebApp.Models
             return users;
         }
 
+
         public UserModel GetUserById(int id)
         {
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            // Find the matching ID number
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
                 string query = "SELECT * FROM Users WHERE Id = @Id";
-                MySqlCommand command = new MySqlCommand(query, connection);
+                SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@Id", id);
-                MySqlDataReader reader = command.ExecuteReader();
+                SqlDataReader reader = command.ExecuteReader();
+
                 while (reader.Read())
                 {
                     UserModel user = new UserModel
@@ -144,33 +131,51 @@ namespace MinesweeperWebApp.Models
                         Id = reader.GetInt32(reader.GetOrdinal("Id")),
                         Username = reader.GetString(reader.GetOrdinal("Username")),
                         PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
-                        //Salt = reader.GetString(reader.GetOrdinal("Salt")),
-                        Salt = reader["Salt"] as byte[],
+                        Salt = (byte[])reader["Salt"],
                         Groups = reader.GetString(reader.GetOrdinal("Groups"))
                     };
-                    return user;
+                    return user; // Return the matching user
                 }
             }
-            return null;
+            return null; // No matching user found
         }
+
 
         public void UpdateUser(UserModel user)
         {
+            // Find the matching user. If found, update the record using the new data
+            // ID numbers do not change; all other fields can be updated.
             int id = user.Id;
             UserModel found = GetUserById(id);
             if (found != null)
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = @"UPDATE Users SET Username = @Username, PasswordHash = @PasswordHash, Salt = @Salt, Groups = @Groups WHERE Id = @Id";
-                    MySqlCommand command = new MySqlCommand(query, connection);
+                    string query = @"
+            UPDATE Users 
+            SET Username = @Username, 
+                PasswordHash = @PasswordHash, 
+                Salt = @Salt, 
+                Groups = @Groups 
+            WHERE Id = @Id";
+
+                    SqlCommand command = new SqlCommand(query, connection);
                     command.Parameters.AddWithValue("@Username", user.Username);
                     command.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
                     command.Parameters.AddWithValue("@Salt", user.Salt);
                     command.Parameters.AddWithValue("@Groups", user.Groups);
+                    command.Parameters.AddWithValue("@Id", user.Id);
+                    command.ExecuteNonQuery();
                 }
             }
         }
+
+        public UserModel GetUserByUsername(string userName)
+        {
+            UserModel user = null;
+            return user;
+        }
+
     }
 }

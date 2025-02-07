@@ -13,31 +13,39 @@ namespace MinesweeperWebApp.Models
         public byte[] Salt { get; set; }
         public string Groups { get; set; }
 
-        internal void SetPassword(string v)
+        public void SetPassword(string password)
         {
-            byte[] salt = new byte[50];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(salt);
-            }
-            Salt = salt;
-            PasswordHash = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                password: v,
-                salt: salt,
-                prf: KeyDerivationPrf.HMACSHA256,
-                iterationCount: 100000,
-                numBytesRequested: 64));
+            Salt = MakeSalt();
+            PasswordHash = Hash(password, Salt);
         }
 
-        internal bool VerifyPassword(string password)
+        public bool VerifyPassword(string password)
         {
-            string hash = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                password: password,
-                salt: Salt,
-                prf: KeyDerivationPrf.HMACSHA256,
-                iterationCount: 100000,
-                numBytesRequested: 64));
-            return hash == PasswordHash;
+            string hashedInput = Hash(password, Salt);
+            return hashedInput == PasswordHash;
+        }
+
+        // I didn't see instructions on hashing in the doc and missed it in class
+        // I had to find out how to do it online 
+        // Ref: https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.rfc2898derivebytes?view=net-9.0&utm_source=chatgpt.com
+
+        private byte[] MakeSalt()
+        {
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                byte[] salt = new byte[16];
+                rng.GetBytes(salt);
+                return salt;
+            }
+        }
+
+        private string Hash(string password, byte[] salt)
+        {
+            using (var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 10000, HashAlgorithmName.SHA256))
+            {
+                byte[] hash = pbkdf2.GetBytes(32);
+                return Convert.ToBase64String(hash);
+            }
         }
     }
 }
