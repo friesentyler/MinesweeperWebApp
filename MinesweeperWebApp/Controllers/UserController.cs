@@ -41,7 +41,7 @@ namespace MinesweeperWebApp.Controllers
         [SessionCheckFilter]
         public IActionResult Game()
         {
-            return RedirectToAction("Index", "Button");
+            return RedirectToAction("Index", "Game");
         }
 
         [AdminCheckFilter]
