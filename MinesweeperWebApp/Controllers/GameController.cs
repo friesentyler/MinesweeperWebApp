@@ -12,10 +12,20 @@ public class GameController : Controller
         var board = HttpContext.Session.GetObjectFromJson<Board>("Board");
         if (board == null)
         {
-            board = new Board(1);
-            HttpContext.Session.SetObjectAsJson("Board", board);
+            if (board == null)
+            {
+                board = new Board(1);
+            }
         }
         return View(board);
+    }
+
+    [HttpPost]
+    public IActionResult StartGame(int difficulty)
+    {
+        var board = new Board(difficulty);
+        HttpContext.Session.SetObjectAsJson("Board", board);
+        return RedirectToAction("Index", board);
     }
 
     public IActionResult ChooseDifficulty()
