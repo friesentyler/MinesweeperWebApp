@@ -12,4 +12,8 @@
     <PackageReference Include="ServiceStack.Text" Version="8.5.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="BusinessLogic\" />
+  </ItemGroup>
+
 </Project>
