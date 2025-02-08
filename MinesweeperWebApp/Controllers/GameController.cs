@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using MinesweeperWebApp.Models;
-
+/*
 namespace MinesweeperWebApp.Controllers
 {
-    public class ButtonController : Controller
+    public class GameController : Controller
     {
         static List<ButtonModel> buttons = new List<ButtonModel>();
 
@@ -12,7 +12,7 @@ namespace MinesweeperWebApp.Controllers
 
         static bool allSameColor = false;
 
-        public ButtonController()
+        public GameController()
         {
             // Create a set of buttons with random images
             if (buttons.Count == 0)
@@ -43,12 +43,53 @@ namespace MinesweeperWebApp.Controllers
 
         public IActionResult Index()
         {
-            var viewModel = new ButtonViewModel
-            {
-                Buttons = buttons,
-                AllSameColor = allSameColor,
-            };
-            return View(viewModel);
+            var board = new Board(1);
+            return View(board);
         }
     }
+}*/
+
+public class GameController : Controller
+{
+    public Board CurrentBoard
+    {
+        get
+        {
+            var board = HttpContext.Session.GetObjectFromJson<Board>("Board");
+            if (board == null)
+            {
+                board = new Board(1); // Default difficulty 1
+            }
+            board.UnflattenCells(); // Convert the list back to the 2D array
+            return board;
+        }
+        set
+        {
+            value.FlattenCells(); // Convert the 2D array to a list before saving
+            HttpContext.Session.SetObjectAsJson("Board", value);
+        }
+    }
+
+    public ActionResult Index()
+    {
+        var board = CurrentBoard;
+        return View(board);
+    }
+
+    [HttpPost]
+    public ActionResult ClickCell(int x, int y)
+    {
+        var board = CurrentBoard;
+        board.FloodFill(x, y);
+
+        var gameState = board.DetermineGameState();
+        return View("Index", board);
+    }
+
+    public ActionResult RestartGame()
+    {
+        HttpContext.Session.SetObjectAsJson("Board", new Board(1)); // Default difficulty 1
+        return RedirectToAction("Index");
+    }
 }
+

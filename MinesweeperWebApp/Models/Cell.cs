@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MinesweeperWebApp.MineSweeperClasses
+namespace MinesweeperWebApp.Models
 {
+    [Serializable]
     public class Cell
     {
         public int Row { get; set; }

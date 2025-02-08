@@ -1,0 +1,95 @@
+﻿
+
+@model MinesweeperWebApp.Models.Board
+
+@{
+    ViewBag.Title = "Minesweeper";
+}
+
+<style >
+    table {
+        border-collapse: collapse;
+        margin: 20px;
+    }
+
+    td {
+        width: 30px;
+        height: 30px;
+        text-align: center;
+        border: 1px solid #ccc;
+        cursor: pointer;
+        font-size: 18px;
+    }
+
+    button {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        border: none;
+        background: transparent;
+    }
+</style>
+
+
+<h2>Minesweeper</h2>
+
+<div>
+    <p>Score: @Model.score</p>
+    <p>Rewards Collected: @Model.collectedRewards</p>
+    <p>Status: @Model.DetermineGameState().ToString()</p>
+</div>
+
+<!-- Create a table to display the grid -->
+<table>
+    @for (int row = 0; row < Model.Size; row++)
+    {
+        <tr>
+            @for (int col = 0; col < Model.Size; col++)
+            {
+                var cell = Model.Cells[col, row];
+                var cellId = $"{col}-{row}"; // Unique ID for each cell
+
+                <td>
+                    <!-- Handle cell clicking via form submission -->
+                    @using (Html.BeginForm("ClickCell", "Game", FormMethod.Post))
+                    {
+                        @Html.Hidden("x", col)
+                        @Html.Hidden("y", row)
+                        <button type="submit">
+                            @if (cell.IsVisited)
+                            {
+                                if (cell.IsBomb)
+                                {
+                                    @:💣
+                                }
+                                else if (cell.HasSpecialReward)
+                                {
+                                    @:🎁
+                                }
+                                else
+                                {
+                                    @: @cell.NumberOfBombNeighbors
+                                }
+                            }
+                            else if (cell.IsFlagged)
+                            {
+                                @:🚩
+                            }
+                            else
+                            {
+                                @:⬜
+                            }
+                        </button>
+                    }
+                </td>
+            }
+        </tr>
+    }
+</table>
+
+<!-- Button to restart the game -->
+@using (Html.BeginForm("RestartGame", "Game", FormMethod.Post))
+{
+    <button type="submit">Restart Game</button>
+}
+
