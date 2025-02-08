@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 
 public class GameController : Controller
 {
+
     public ActionResult Index()
     {
         var board = HttpContext.Session.GetObjectFromJson<Board>("Board");
@@ -15,6 +16,11 @@ public class GameController : Controller
             HttpContext.Session.SetObjectAsJson("Board", board);
         }
         return View(board);
+    }
+
+    public IActionResult ChooseDifficulty()
+    {
+        return View();
     }
 
     [HttpPost]
