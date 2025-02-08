@@ -1,0 +1,44 @@
+﻿@model MinesweeperWebApp.Models.UserModel
+
+@{
+    ViewData["Title"] = "LoginSuccess";
+}
+
+<h1>Login Success</h1>
+
+<div>
+    <h4>UserModel</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Username)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Username)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PasswordHash)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PasswordHash)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Salt)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Salt)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Groups)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Groups)
+        </dd>
+    </dl>
+</div>
