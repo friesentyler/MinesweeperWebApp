@@ -1,0 +1,24 @@
+﻿@model MinesweeperWebApp.Models.RegistrationErrorViewModel
+
+@{
+    ViewData["Title"] = "ProcessRegister";
+}
+
+<h1>ProcessRegister</h1>
+
+<div>
+    <h2 style="color:red">Bad Data, Try Again</h2>
+    <h4>The following errors are preventing your user from being registered: </h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Error)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Error)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Register">Back to Registration</a>
+</div>

@@ -13,16 +13,22 @@ namespace MinesweeperWebApp.Data
             {
                 connection.Open();
                 string query = @"
-                INSERT INTO Users (Username, PasswordHash, Salt, Groups)
-                VALUES (@Username, @PasswordHash, @Salt, @Groups);
-                SELECT SCOPE_IDENTITY();";
+                    INSERT INTO Users (Username, PasswordHash, Salt, Groups, Email, Sex, State,      FirstName,  LastName, Age)
+                    VALUES (@Username, @PasswordHash, @Salt, @Groups, @Email, @Sex, @State,     @FirstName,      @LastName, @Age);
+                    SELECT SCOPE_IDENTITY();";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Username", user.Username);
                     command.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
                     command.Parameters.AddWithValue("@Salt", user.Salt);
-                    command.Parameters.AddWithValue("@Groups", user.Groups);
+                    command.Parameters.AddWithValue("@Groups", user.Groups ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@Email", user.Email ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@Sex", user.Sex ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@State", user.State ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@FirstName", user.FirstName ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@LastName", user.LastName ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@Age", user.Age);
 
                     // Execute the query and get the newly inserted ID
                     object result = command.ExecuteScalar();
@@ -30,6 +36,7 @@ namespace MinesweeperWebApp.Data
                 }
             }
         }
+
 
 
         public int CheckCredentials(string username, string password)
@@ -53,18 +60,17 @@ namespace MinesweeperWebApp.Data
                         Username = reader.GetString(reader.GetOrdinal("Username")),
                         PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
                         Salt = (byte[])reader["Salt"],
-                        Groups = reader.GetString(reader.GetOrdinal("Groups"))
+                        Groups = reader.IsDBNull(reader.GetOrdinal("Groups")) ? null : reader.GetString(reader.GetOrdinal("Groups")),
+                        Email = reader.IsDBNull(reader.GetOrdinal("Email")) ? null : reader.GetString(reader.GetOrdinal("Email")),
+                        Sex = reader.IsDBNull(reader.GetOrdinal("Sex")) ? null : reader.GetString(reader.GetOrdinal("Sex")),
+                        State = reader.IsDBNull(reader.GetOrdinal("State")) ? null : reader.GetString(reader.GetOrdinal("State")),
+                        FirstName = reader.IsDBNull(reader.GetOrdinal("FirstName")) ? null : reader.GetString(reader.GetOrdinal("FirstName")),
+                        LastName = reader.IsDBNull(reader.GetOrdinal("LastName")) ? null : reader.GetString(reader.GetOrdinal("LastName")),
+                        Age = reader.IsDBNull(reader.GetOrdinal("Age")) ? 0 : reader.GetInt32(reader.GetOrdinal("Age"))
                     };
 
                     bool valid = user.VerifyPassword(password);
-                    if (valid == true)
-                    {
-                        return user.Id; // User found and password is correct
-                    }
-                    else
-                    {
-                        return 0; // User found but password is incorrect
-                    }
+                    return valid ? user.Id : 0;
                 }
                 return 0; // User not found
             }
@@ -73,7 +79,6 @@ namespace MinesweeperWebApp.Data
 
         public void DeleteUser(UserModel user)
         {
-            // Delete the matching user record
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
@@ -87,7 +92,6 @@ namespace MinesweeperWebApp.Data
 
         public List<UserModel> GetAllUsers()
         {
-            // Search for all users
             List<UserModel> users = new List<UserModel>();
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -104,7 +108,13 @@ namespace MinesweeperWebApp.Data
                         Username = reader.GetString(reader.GetOrdinal("Username")),
                         PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
                         Salt = (byte[])reader["Salt"],
-                        Groups = reader.GetString(reader.GetOrdinal("Groups"))
+                        Groups = reader.IsDBNull(reader.GetOrdinal("Groups")) ? null : reader.GetString(reader.GetOrdinal("Groups")),
+                        Email = reader.IsDBNull(reader.GetOrdinal("Email")) ? null : reader.GetString(reader.GetOrdinal("Email")),
+                        Sex = reader.IsDBNull(reader.GetOrdinal("Sex")) ? null : reader.GetString(reader.GetOrdinal("Sex")),
+                        State = reader.IsDBNull(reader.GetOrdinal("State")) ? null : reader.GetString(reader.GetOrdinal("State")),
+                        FirstName = reader.IsDBNull(reader.GetOrdinal("FirstName")) ? null : reader.GetString(reader.GetOrdinal("FirstName")),
+                        LastName = reader.IsDBNull(reader.GetOrdinal("LastName")) ? null : reader.GetString(reader.GetOrdinal("LastName")),
+                        Age = reader.IsDBNull(reader.GetOrdinal("Age")) ? 0 : reader.GetInt32(reader.GetOrdinal("Age"))
                     };
                     users.Add(user);
                 }
@@ -115,7 +125,6 @@ namespace MinesweeperWebApp.Data
 
         public UserModel GetUserById(int id)
         {
-            // Find the matching ID number
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
@@ -124,27 +133,30 @@ namespace MinesweeperWebApp.Data
                 command.Parameters.AddWithValue("@Id", id);
                 SqlDataReader reader = command.ExecuteReader();
 
-                while (reader.Read())
+                if (reader.Read())
                 {
-                    UserModel user = new UserModel
+                    return new UserModel
                     {
                         Id = reader.GetInt32(reader.GetOrdinal("Id")),
                         Username = reader.GetString(reader.GetOrdinal("Username")),
                         PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
                         Salt = (byte[])reader["Salt"],
-                        Groups = reader.GetString(reader.GetOrdinal("Groups"))
+                        Groups = reader.IsDBNull(reader.GetOrdinal("Groups")) ? null : reader.GetString(reader.GetOrdinal("Groups")),
+                        Email = reader.IsDBNull(reader.GetOrdinal("Email")) ? null : reader.GetString(reader.GetOrdinal("Email")),
+                        Sex = reader.IsDBNull(reader.GetOrdinal("Sex")) ? null : reader.GetString(reader.GetOrdinal("Sex")),
+                        State = reader.IsDBNull(reader.GetOrdinal("State")) ? null : reader.GetString(reader.GetOrdinal("State")),
+                        FirstName = reader.IsDBNull(reader.GetOrdinal("FirstName")) ? null : reader.GetString(reader.GetOrdinal("FirstName")),
+                        LastName = reader.IsDBNull(reader.GetOrdinal("LastName")) ? null : reader.GetString(reader.GetOrdinal("LastName")),
+                        Age = reader.IsDBNull(reader.GetOrdinal("Age")) ? 0 : reader.GetInt32(reader.GetOrdinal("Age"))
                     };
-                    return user; // Return the matching user
                 }
             }
-            return null; // No matching user found
+            return null;
         }
 
 
         public void UpdateUser(UserModel user)
         {
-            // Find the matching user. If found, update the record using the new data
-            // ID numbers do not change; all other fields can be updated.
             int id = user.Id;
             UserModel found = GetUserById(id);
             if (found != null)
@@ -153,18 +165,30 @@ namespace MinesweeperWebApp.Data
                 {
                     connection.Open();
                     string query = @"
-            UPDATE Users 
-            SET Username = @Username, 
-                PasswordHash = @PasswordHash, 
-                Salt = @Salt, 
-                Groups = @Groups 
-            WHERE Id = @Id";
+                        UPDATE Users 
+                        SET Username = @Username, 
+                            PasswordHash = @PasswordHash, 
+                            Salt = @Salt, 
+                            Groups = @Groups,
+                            Email = @Email,
+                            Sex = @Sex,
+                            State = @State,
+                            FirstName = @FirstName,
+                            LastName = @LastName,
+                            Age = @Age
+                        WHERE Id = @Id";
 
                     SqlCommand command = new SqlCommand(query, connection);
                     command.Parameters.AddWithValue("@Username", user.Username);
                     command.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
                     command.Parameters.AddWithValue("@Salt", user.Salt);
-                    command.Parameters.AddWithValue("@Groups", user.Groups);
+                    command.Parameters.AddWithValue("@Groups", user.Groups ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@Email", user.Email ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@Sex", user.Sex ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@State", user.State ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@FirstName", user.FirstName ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@LastName", user.LastName ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@Age", user.Age);
                     command.Parameters.AddWithValue("@Id", user.Id);
                     command.ExecuteNonQuery();
                 }
@@ -173,8 +197,33 @@ namespace MinesweeperWebApp.Data
 
         public UserModel GetUserByUsername(string userName)
         {
-            UserModel user = null;
-            return user;
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "SELECT * FROM Users WHERE Username = @Username";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Username", userName);
+                SqlDataReader reader = command.ExecuteReader();
+
+                if (reader.Read()) // If a match is found
+                {
+                    return new UserModel
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                        Username = reader.GetString(reader.GetOrdinal("Username")),
+                        PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
+                        Salt = (byte[])reader["Salt"],
+                        Groups = reader.IsDBNull(reader.GetOrdinal("Groups")) ? null : reader.GetString(reader.GetOrdinal("Groups")),
+                        Email = reader.IsDBNull(reader.GetOrdinal("Email")) ? null : reader.GetString(reader.GetOrdinal("Email")),
+                        Sex = reader.IsDBNull(reader.GetOrdinal("Sex")) ? null : reader.GetString(reader.GetOrdinal("Sex")),
+                        State = reader.IsDBNull(reader.GetOrdinal("State")) ? null : reader.GetString(reader.GetOrdinal("State")),
+                        FirstName = reader.IsDBNull(reader.GetOrdinal("FirstName")) ? null : reader.GetString(reader.GetOrdinal("FirstName")),
+                        LastName = reader.IsDBNull(reader.GetOrdinal("LastName")) ? null : reader.GetString(reader.GetOrdinal("LastName")),
+                        Age = reader.IsDBNull(reader.GetOrdinal("Age")) ? 0 : reader.GetInt32(reader.GetOrdinal("Age"))
+                    };
+                }
+            }
+            return null; // No matching user found
         }
 
     }

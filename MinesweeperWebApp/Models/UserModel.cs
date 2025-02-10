@@ -12,6 +12,12 @@ namespace MinesweeperWebApp.Models
         public string PasswordHash { get; set; }
         public byte[] Salt { get; set; }
         public string Groups { get; set; }
+        public string Email { get; set; }
+        public string Sex { get; set; }
+        public string State { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public int Age { get; set; }    
 
         public void SetPassword(string password)
         {
@@ -25,8 +31,6 @@ namespace MinesweeperWebApp.Models
             return hashedInput == PasswordHash;
         }
 
-        // I didn't see instructions on hashing in the doc and missed it in class
-        // I had to find out how to do it online 
         // Ref: https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.rfc2898derivebytes?view=net-9.0&utm_source=chatgpt.com
 
         private byte[] MakeSalt()

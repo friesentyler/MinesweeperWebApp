@@ -2,11 +2,13 @@
 using MinesweeperWebApp.Models;
 using MinesweeperWebApp.Filters;
 using System.Net.Security;
+using MinesweeperWebApp.Data;
 
 namespace RegisterAndLoginApp.Controllers
 {
     public class UserController : Controller
     {
+        private ValidationService _validationService = new ValidationService();
         private IUserManager users;
         public UserController(IUserManager userManager)
         {
@@ -20,7 +22,6 @@ namespace RegisterAndLoginApp.Controllers
 
         public IActionResult ProcessLogin(LoginViewModel loginViewModel)
         {
-            Console.WriteLine("Hit");
             var result = users.CheckCredentials(loginViewModel.Username, loginViewModel.Password);
 
             if (result > 0)
@@ -66,6 +67,12 @@ namespace RegisterAndLoginApp.Controllers
             user.Username = registerViewModel.Username;
             user.SetPassword(registerViewModel.Password);
             user.Groups = "";
+            user.Email = registerViewModel.Email;
+            user.Age = registerViewModel.Age;
+            user.State = registerViewModel.State;
+            user.FirstName = registerViewModel.Firstname;
+            user.LastName = registerViewModel.Lastname;
+            user.Sex = registerViewModel.Sex;   
 
             foreach (var group in registerViewModel.Groups)
             {
@@ -76,9 +83,19 @@ namespace RegisterAndLoginApp.Controllers
             }
 
             user.Groups = user.Groups.TrimEnd(','); // Remove trailing comma
-            users.AddUser(user);
+            string errors = _validationService.ValidateUser(user);
 
-            return View("Index");
+            if (errors == "")
+            {
+                users.AddUser(user);
+
+                return View("RegisterSuccess", user);
+            }
+            else
+            {
+                RegistrationErrorViewModel errorViewModel = new RegistrationErrorViewModel(errors);
+                return View("ProcessRegister", errorViewModel); 
+            }
         }
     }
 }
