@@ -3,8 +3,9 @@ using MinesweeperWebApp.Models;
 using MinesweeperWebApp.Filters;
 using System.Net.Security;
 using MinesweeperWebApp.Data;
+using MinesweeperWebApp.Controllers;
 
-namespace RegisterAndLoginApp.Controllers
+namespace MinesweeperWebApp.Controllers
 {
     public class UserController : Controller
     {
@@ -40,7 +41,7 @@ namespace RegisterAndLoginApp.Controllers
         [SessionCheckFilter]
         public IActionResult Game()
         {
-            return View();
+            return RedirectToAction("Index", "Button");
         }
 
         [AdminCheckFilter]

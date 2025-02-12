@@ -1,0 +1,36 @@
+﻿@model ButtonViewModel
+
+<!-- External CSS -->
+<link rel="stylesheet" href="css/button.css" />
+
+<h2>The time is @DateTime.Now</h2>
+
+@if (Model.AllSameColor)
+{
+    <p style="color: green; font-weight: bold;">All buttons are the same color!</p>
+}
+else
+{
+    <p style="color: red;">Buttons have different colors.</p>
+}
+
+<form asp-action="ButtonClick">
+    <div class="container">
+        @for (int i = 0; i < Model.Buttons.Count(); i++)
+        {
+            if (i % 5 == 0)
+            {
+                <div style="width: 100%;"></div>
+            }
+
+            var button = Model.Buttons.ElementAt(i);
+            <div class="game-button" data-id="@button.Id">
+                <button type="submit" name="id" value="@button.Id">
+                    <img src="/img/@button.ButtonImage" alt="Button" />
+                    <div>@button.Id, @button.ButtonState</div>
+                </button>
+            </div>
+        }
+    </div>
+</form>
+
