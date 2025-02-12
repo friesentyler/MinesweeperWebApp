@@ -22,8 +22,6 @@ namespace MinesweeperWebApp.Models
         public DateTime EndTime { get; set; }
         public enum GameStatus { InProgress, Won, Lost }
         public int score { get; set; }
-        public List<Cell> CellsList { get; set; }
-
         public int collectedRewards { get; set; }
 
         [NonSerialized]
@@ -53,32 +51,9 @@ namespace MinesweeperWebApp.Models
                 RewardsRemaining = 4;
                 PercentBombs = 0.20f;
             }
-            CellsList = new List<Cell>();
             Cells = new Cell[Size, Size];
             score = 0;
             InitializeBoard();
-        }
-
-        public void FlattenCells()
-        {
-            CellsList.Clear();
-            foreach (var cell in Cells)
-            {
-                CellsList.Add(cell);
-            }
-        }
-
-        public void UnflattenCells()
-        {
-            int index = 0;
-            for (int  i = 0; i < Size; i++)
-            {
-                for (int j = 0; j < Size; j++)
-                {
-                    Cells[i, j] = CellsList[index];
-                    index++;
-                }
-            }
         }
 
         /// <summary>
@@ -97,7 +72,6 @@ namespace MinesweeperWebApp.Models
             SetupRewards();
             CalculateNumberOfBombNeighbors();
             StartTime = DateTime.Now;
-            FlattenCells();
         }
 
         /// <summary>

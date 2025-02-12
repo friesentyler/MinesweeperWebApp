@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using MinesweeperWebApp.Models;
+using Newtonsoft.Json.Linq;
 /*
 namespace MinesweeperWebApp.Controllers
 {
@@ -51,8 +52,10 @@ namespace MinesweeperWebApp.Controllers
 
 public class GameController : Controller
 {
+    /*
     public Board CurrentBoard
     {
+
         get
         {
             var board = HttpContext.Session.GetObjectFromJson<Board>("Board");
@@ -60,30 +63,33 @@ public class GameController : Controller
             {
                 board = new Board(1); // Default difficulty 1
             }
-            board.UnflattenCells(); // Convert the list back to the 2D array
             return board;
         }
         set
         {
-            value.FlattenCells(); // Convert the 2D array to a list before saving
             HttpContext.Session.SetObjectAsJson("Board", value);
         }
     }
+    */
 
     public ActionResult Index()
     {
-        var board = CurrentBoard;
+        var board = HttpContext.Session.GetObjectFromJson<Board>("Board");
+        if (board == null)
+        {
+            board = new Board(1);
+            HttpContext.Session.SetObjectAsJson("Board", board);
+        }
         return View(board);
     }
 
     [HttpPost]
     public ActionResult ClickCell(int x, int y)
     {
-        var board = CurrentBoard;
+        var board = HttpContext.Session.GetObjectFromJson<Board>("Board") ?? new Board(1);
         board.FloodFill(x, y);
-
-        var gameState = board.DetermineGameState();
-        return View("Index", board);
+        HttpContext.Session.SetObjectAsJson("Board", board);
+        return RedirectToAction("Index"); // ✅ Redirect instead of returning the View directly
     }
 
     public ActionResult RestartGame()
