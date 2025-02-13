@@ -138,15 +138,6 @@ namespace MinesweeperWebApp.Models
         }
 
         /// <summary>
-        /// timer should reduce score over time
-        /// </summary>
-        /// <param name="time"></param>
-        public void TimerUpdateScore(int time)
-        {
-            score = score - 20;
-        }
-
-        /// <summary>
         /// helper function to determine if a cell is out of bounds
         /// </summary>
         /// <param name="row"></param>
