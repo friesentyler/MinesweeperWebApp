@@ -9,7 +9,27 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="ServiceStack.Text" Version="8.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="MinesweeperClasses\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Assets\1.png" />
+    <None Include="wwwroot\Assets\2.png" />
+    <None Include="wwwroot\Assets\3.png" />
+    <None Include="wwwroot\Assets\4.png" />
+    <None Include="wwwroot\Assets\5.png" />
+    <None Include="wwwroot\Assets\6.png" />
+    <None Include="wwwroot\Assets\7.png" />
+    <None Include="wwwroot\Assets\8.png" />
+    <None Include="wwwroot\Assets\bomb.png" />
+    <None Include="wwwroot\Assets\empty.png" />
+    <None Include="wwwroot\Assets\flag.png" />
+    <None Include="wwwroot\Assets\unvisited.png" />
   </ItemGroup>
 
 </Project>

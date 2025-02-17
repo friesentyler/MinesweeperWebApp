@@ -37,11 +37,10 @@ namespace MinesweeperWebApp.Controllers
                 return View("LoginFailure");
             }
         }
-
-        [SessionCheckFilter]
+      
         public IActionResult Game()
         {
-            return RedirectToAction("Index", "Button");
+            return RedirectToAction("ChooseDifficulty", "Game");
         }
 
         [AdminCheckFilter]

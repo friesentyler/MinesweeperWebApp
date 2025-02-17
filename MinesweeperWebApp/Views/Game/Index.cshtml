@@ -1,0 +1,108 @@
+﻿
+
+@model MinesweeperWebApp.Models.Board
+
+@{
+    ViewBag.Title = "Minesweeper";
+}
+
+<style >
+    table {
+        border-collapse: collapse;
+        margin: 20px;
+    }
+
+    td {
+        width: 50px;
+        height: 50px;
+        text-align: center;
+        border: 1px solid #ccc;
+        cursor: pointer;
+        font-size: 18px;
+    }
+
+    button {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        border: none;
+        background: transparent;
+    }
+</style>
+
+
+<h2>Minesweeper</h2>
+
+<div>
+    <p>Score: @Model.score</p>
+    <p>Rewards Collected: @Model.collectedRewards</p>
+</div>
+
+<!-- Determine if buttons should be disabled -->
+@{
+    bool disableButtons = Model.DetermineGameState() != 0;
+}
+
+<table>
+    @for (int row = 0; row < Model.Size; row++)
+    {
+        <tr>
+            @for (int col = 0; col < Model.Size; col++)
+            {
+                var cell = Model.Cells[col, row];
+                var cellId = $"{col}-{row}"; // Unique ID for each cell
+
+                <td>
+                    <!-- Handle cell clicking via form submission -->
+                    @using (Html.BeginForm("ClickCell", "Game", FormMethod.Post))
+                    {
+                        @Html.Hidden("x", col)
+                        @Html.Hidden("y", row)
+                        <button type="submit" @(disableButtons ? "disabled" : "")>
+                            @if (cell.IsVisited)
+                            {
+                                if (cell.IsBomb)
+                                {
+                                    <img src="~/Assets/bomb.png" alt="bomb" width="50" height="50" />
+                                }
+                                else if (cell.HasSpecialReward)
+                                {
+                                    <img src="~/Assets/flag.png" alt="flag" width="50" height="50" />
+                                }
+                                else
+                                {
+                                    if (cell.NumberOfBombNeighbors > 0)
+                                    {
+                                        Console.WriteLine("here");
+                                        var imageUrl = "~/Assets/" + cell.NumberOfBombNeighbors + ".png";
+                                        <img src="@Url.Content(imageUrl)" alt="@cell.NumberOfBombNeighbors" width="50" height="50" />
+                                    }
+                                    else
+                                    {
+                                        <img src="~/Assets/empty.png" alt="empty" width="50" height="50" />
+                                    }
+                                }
+                            }
+                            else if (cell.IsFlagged)
+                            {
+                                <img src="~/Assets/flag.png" alt="flag" width="50" height="50" />
+                            }
+                            else
+                            {
+                                <img src="~/Assets/unvisited.png" alt="unvisited" width="50" height="50" />
+                            }
+                        </button>
+                    }
+                </td>
+            }
+        </tr>
+    }
+</table>
+
+
+<!-- Button to restart the game -->
+@using (Html.BeginForm("RestartGame", "Game", FormMethod.Post))
+{
+    <button type="submit">Restart Game</button>
+}
+

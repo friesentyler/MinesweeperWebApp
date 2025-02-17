@@ -1,0 +1,48 @@
+﻿@model MinesweeperWebApp.Models.Board
+
+@{
+    ViewData["Title"] = "Lose";
+}
+
+<h1 style="color:red;">Lose</h1>
+
+<div>
+    <h4>Final Score: 0</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Size)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Size)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PercentBombs)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PercentBombs)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.StartTime)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.StartTime)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.EndTime)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.EndTime)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.collectedRewards)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.collectedRewards)
+        </dd>
+    </dl>
+</div>
+
+<div>
+    <a asp-action="Index">Back to Game Page</a>
+</div>
