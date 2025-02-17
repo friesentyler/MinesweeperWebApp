@@ -2,6 +2,8 @@
 using System.Security.Cryptography;
 using MinesweeperWebApp.Models;
 using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Razor.Language;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 
 public class GameController : Controller
@@ -39,8 +41,18 @@ public class GameController : Controller
         var board = HttpContext.Session.GetObjectFromJson<Board>("Board") ?? new Board(1);
         board.FloodFill(x, y);
         board.UpdateScore(x, y);
-        Console.WriteLine(board.score.ToString());
         HttpContext.Session.SetObjectAsJson("Board", board);
+        int state = board.DetermineGameState();
+        Console.WriteLine(state);
+        if (state == -1)
+        {
+            return View("Lose", board);
+        }
+        else if (state == 1)
+        {
+            return View("Win", board);
+        }
+        
         return RedirectToAction("Index");
     }
 

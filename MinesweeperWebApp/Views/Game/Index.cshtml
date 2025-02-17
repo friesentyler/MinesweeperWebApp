@@ -36,10 +36,13 @@
 <div>
     <p>Score: @Model.score</p>
     <p>Rewards Collected: @Model.collectedRewards</p>
-    <p>Status: @Model.DetermineGameState().ToString()</p>
 </div>
 
-<!-- Create a table to display the grid -->
+<!-- Determine if buttons should be disabled -->
+@{
+    bool disableButtons = Model.DetermineGameState() != 0;
+}
+
 <table>
     @for (int row = 0; row < Model.Size; row++)
     {
@@ -55,7 +58,7 @@
                     {
                         @Html.Hidden("x", col)
                         @Html.Hidden("y", row)
-                        <button type="submit">
+                        <button type="submit" @(disableButtons ? "disabled" : "")>
                             @if (cell.IsVisited)
                             {
                                 if (cell.IsBomb)
@@ -86,6 +89,7 @@
         </tr>
     }
 </table>
+
 
 <!-- Button to restart the game -->
 @using (Html.BeginForm("RestartGame", "Game", FormMethod.Post))

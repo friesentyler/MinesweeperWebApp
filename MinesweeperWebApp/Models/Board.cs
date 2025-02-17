@@ -1,4 +1,5 @@
-﻿using MinesweeperWebApp.Models;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MinesweeperWebApp.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -109,9 +110,13 @@ namespace MinesweeperWebApp.Models
         /// </summary>
         /// <param name="gameState"></param>
         /// <returns></returns>
-        public int DetermineFinalScore(GameStatus gameState)
+        public int DetermineFinalScore()
         {
             int finalScore = score;
+            int status = DetermineGameState();
+            TimeSpan gameTime = EndTime - StartTime;
+            // SUBTRACT 20 POINTS FOR EACH SECOND
+            finalScore = finalScore - (Convert.ToInt32(gameTime.TotalSeconds) * 20);
 
             // if the user takes exceedingly long, we just give them
             // a score of zero
@@ -119,7 +124,7 @@ namespace MinesweeperWebApp.Models
             {
                 finalScore = 0;
             }
-            if (gameState == GameStatus.Lost)
+            if (status == -1)
             {
                 finalScore = 0;
             }
@@ -267,7 +272,7 @@ namespace MinesweeperWebApp.Models
         /// loops through the entirety of the board and determines the current game state
         /// </summary>
         /// <returns>GameStatus</returns>
-        public GameStatus DetermineGameState()
+        public int DetermineGameState()
         {
             // loop through game board
             bool isWon = true;
@@ -283,18 +288,19 @@ namespace MinesweeperWebApp.Models
                     // check if there are any bomb cells that have been visited
                     if (Cells[col, row].IsBomb && Cells[col, row].IsVisited)
                     {
-                        return GameStatus.Lost;
+                        return -1;
                     }
                 }
             }
             // return the proper game state based on booleans
             if (isWon)
             {
-                return GameStatus.Won;
+                EndTime = DateTime.Now;
+                return 1;
             }
             else
             {
-                return GameStatus.InProgress;
+                return 0;
             }
         }
 
