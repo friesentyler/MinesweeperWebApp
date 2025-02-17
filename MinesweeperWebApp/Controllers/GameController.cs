@@ -50,7 +50,6 @@ public class GameController : Controller
         board.UpdateScore(x, y);
         HttpContext.Session.SetObjectAsJson("Board", board);
         int state = board.DetermineGameState();
-        Console.WriteLine(state);
         if (state == -1)
         {
             return View("Lose", board);

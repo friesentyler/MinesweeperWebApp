@@ -9,7 +9,6 @@ namespace MinesweeperWebApp.Filters
         {
             string GameStarter = context.HttpContext.Session.GetString("GameStarter");
             string User = context.HttpContext.Session.GetString("User");
-            Console.WriteLine(GameStarter);
             
             if (context.HttpContext.Session.GetString("User") == null)
             {
