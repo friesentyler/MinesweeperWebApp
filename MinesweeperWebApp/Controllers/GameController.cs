@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using MinesweeperWebApp.Models;
+using MinesweeperWebApp.Filters;
 using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -23,15 +24,21 @@ public class GameController : Controller
     }
 
     [HttpPost]
+    [SessionCheckFilter]
     public IActionResult StartGame(int difficulty)
     {
         var board = new Board(difficulty);
         HttpContext.Session.SetObjectAsJson("Board", board);
-        return RedirectToAction("Index", board);
+        return RedirectToAction("Index");
     }
 
     public IActionResult ChooseDifficulty()
     {
+        string? currentUser = HttpContext.Session.GetString("User");
+        if (currentUser != null)
+        {
+            HttpContext.Session.SetString("GameStarter", currentUser);
+        }
         return View();
     }
 
@@ -43,7 +50,6 @@ public class GameController : Controller
         board.UpdateScore(x, y);
         HttpContext.Session.SetObjectAsJson("Board", board);
         int state = board.DetermineGameState();
-        Console.WriteLine(state);
         if (state == -1)
         {
             return View("Lose", board);

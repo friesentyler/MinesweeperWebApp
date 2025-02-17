@@ -37,8 +37,7 @@ namespace MinesweeperWebApp.Controllers
                 return View("LoginFailure");
             }
         }
-
-        [SessionCheckFilter]
+      
         public IActionResult Game()
         {
             return RedirectToAction("ChooseDifficulty", "Game");
