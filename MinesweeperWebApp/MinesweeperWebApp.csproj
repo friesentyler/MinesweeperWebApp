@@ -17,4 +17,19 @@
     <Folder Include="MinesweeperClasses\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\Assets\1.png" />
+    <None Include="wwwroot\Assets\2.png" />
+    <None Include="wwwroot\Assets\3.png" />
+    <None Include="wwwroot\Assets\4.png" />
+    <None Include="wwwroot\Assets\5.png" />
+    <None Include="wwwroot\Assets\6.png" />
+    <None Include="wwwroot\Assets\7.png" />
+    <None Include="wwwroot\Assets\8.png" />
+    <None Include="wwwroot\Assets\bomb.png" />
+    <None Include="wwwroot\Assets\empty.png" />
+    <None Include="wwwroot\Assets\flag.png" />
+    <None Include="wwwroot\Assets\unvisited.png" />
+  </ItemGroup>
+
 </Project>

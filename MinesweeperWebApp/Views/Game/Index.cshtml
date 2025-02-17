@@ -13,8 +13,8 @@
     }
 
     td {
-        width: 30px;
-        height: 30px;
+        width: 50px;
+        height: 50px;
         text-align: center;
         border: 1px solid #ccc;
         cursor: pointer;
@@ -63,24 +63,33 @@
                             {
                                 if (cell.IsBomb)
                                 {
-                                    @:💣
+                                    <img src="~/Assets/bomb.png" alt="bomb" width="50" height="50" />
                                 }
                                 else if (cell.HasSpecialReward)
                                 {
-                                    @:🎁
+                                    <img src="~/Assets/flag.png" alt="flag" width="50" height="50" />
                                 }
                                 else
                                 {
-                                    @: @cell.NumberOfBombNeighbors
+                                    if (cell.NumberOfBombNeighbors > 0)
+                                    {
+                                        Console.WriteLine("here");
+                                        var imageUrl = "~/Assets/" + cell.NumberOfBombNeighbors + ".png";
+                                        <img src="@Url.Content(imageUrl)" alt="@cell.NumberOfBombNeighbors" width="50" height="50" />
+                                    }
+                                    else
+                                    {
+                                        <img src="~/Assets/empty.png" alt="empty" width="50" height="50" />
+                                    }
                                 }
                             }
                             else if (cell.IsFlagged)
                             {
-                                @:🚩
+                                <img src="~/Assets/flag.png" alt="flag" width="50" height="50" />
                             }
                             else
                             {
-                                @:⬜
+                                <img src="~/Assets/unvisited.png" alt="unvisited" width="50" height="50" />
                             }
                         </button>
                     }
