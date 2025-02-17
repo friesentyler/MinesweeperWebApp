@@ -16,7 +16,7 @@ namespace MinesweeperWebApp.Filters
             }
             else if (User != GameStarter)
             {
-                context.Result = new RedirectResult("/Game/AccessDenied"); // Redirect unauthorized users
+                context.Result = new RedirectResult("/User/Index"); // Redirect unauthorized users
                 return;
             }
         }
