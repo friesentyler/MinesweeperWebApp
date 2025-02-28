@@ -46,19 +46,21 @@ public class GameController : Controller
     public ActionResult ClickCell(int x, int y)
     {
         var board = HttpContext.Session.GetObjectFromJson<Board>("Board") ?? new Board(1);
-        board.FloodFill(x, y);
-        board.UpdateScore(x, y);
-        HttpContext.Session.SetObjectAsJson("Board", board);
-        int state = board.DetermineGameState();
-        if (state == -1)
+        if (!board.Cells[x, y].IsFlagged)
         {
-            return View("Lose", board);
+            board.FloodFill(x, y);
+            board.UpdateScore(x, y);
+            HttpContext.Session.SetObjectAsJson("Board", board);
+            int state = board.DetermineGameState();
+            if (state == -1)
+            {
+                return View("Lose", board);
+            }
+            else if (state == 1)
+            {
+                return View("Win", board);
+            }
         }
-        else if (state == 1)
-        {
-            return View("Win", board);
-        }
-        
         return RedirectToAction("Index");
     }
 
