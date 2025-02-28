@@ -28,10 +28,19 @@
         border: none;
         background: transparent;
     }
+
+    #timestamp {
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
 </style>
 
 
 <h2>Minesweeper</h2>
+
+<div id="timestamp">
+    <p>Current Time: <span id="currentTime">@DateTime.Now.ToString("HH:mm:ss")</span></p>
+</div>
 
 <div>
     <p>Score: @Model.score</p>
@@ -64,6 +73,8 @@
     <button type="submit">Restart Game</button>
 }
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
     // This function is triggered on right-click
     function handleRightClick(event, col, row) {
@@ -93,4 +104,21 @@
         document.body.appendChild(form);
         form.submit();
     }
+
+    function updateTimestamp() {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetTimestamp", "Game")',
+            success: function (response) {
+                // Update the timestamp displayed on the page
+                $('#currentTime').text(response);
+            },
+            error: function () {
+                alert("Error retrieving timestamp.");
+            }
+        });
+    }
+
+    // Call the updateTimestamp function every 1 second (1000 milliseconds)
+    setInterval(updateTimestamp, 1000);
 </script>

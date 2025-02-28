@@ -79,6 +79,12 @@ public class GameController : Controller
         return RedirectToAction("Index");
     }
 
+    [HttpGet]
+    public ActionResult GetTimestamp()
+    {
+        var currentTimestamp = DateTime.Now.ToString("HH:mm:ss");
+        return Content(currentTimestamp);
+    }
 
     public ActionResult RestartGame()
     {
