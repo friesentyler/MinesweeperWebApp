@@ -51,49 +51,7 @@
             {
                 var cell = Model.Cells[col, row];
                 var cellId = $"{col}-{row}"; // Unique ID for each cell
-
-                <td>
-                    <!-- Handle cell clicking via form submission -->
-                    @using (Html.BeginForm("ClickCell", "Game", FormMethod.Post))
-                    {
-                        @Html.Hidden("x", col)
-                        @Html.Hidden("y", row)
-                        <button type="submit" @(disableButtons ? "disabled" : "")>
-                            @if (cell.IsVisited)
-                            {
-                                if (cell.IsBomb)
-                                {
-                                    <img src="~/Assets/bomb.png" alt="bomb" width="50" height="50" />
-                                }
-                                else if (cell.HasSpecialReward)
-                                {
-                                    <img src="~/Assets/flag.png" alt="flag" width="50" height="50" />
-                                }
-                                else
-                                {
-                                    if (cell.NumberOfBombNeighbors > 0)
-                                    {
-                                        Console.WriteLine("here");
-                                        var imageUrl = "~/Assets/" + cell.NumberOfBombNeighbors + ".png";
-                                        <img src="@Url.Content(imageUrl)" alt="@cell.NumberOfBombNeighbors" width="50" height="50" />
-                                    }
-                                    else
-                                    {
-                                        <img src="~/Assets/empty.png" alt="empty" width="50" height="50" />
-                                    }
-                                }
-                            }
-                            else if (cell.IsFlagged)
-                            {
-                                <img src="~/Assets/flag.png" alt="flag" width="50" height="50" />
-                            }
-                            else
-                            {
-                                <img src="~/Assets/unvisited.png" alt="unvisited" width="50" height="50" />
-                            }
-                        </button>
-                    }
-                </td>
+                @Html.Partial("_Cell", cell)
             }
         </tr>
     }
