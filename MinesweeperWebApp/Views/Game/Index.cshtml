@@ -64,3 +64,33 @@
     <button type="submit">Restart Game</button>
 }
 
+<script>
+    // This function is triggered on right-click
+    function handleRightClick(event, col, row) {
+        event.preventDefault(); // Prevent the default right-click menu
+
+        // Create a form and set it up to flag the cell
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '@Url.Action("FlagCell", "Game")'; // Action to handle flagging
+
+        // Create hidden input fields to pass the cell coordinates
+        var hiddenX = document.createElement('input');
+        hiddenX.type = 'hidden';
+        hiddenX.name = 'x';
+        hiddenX.value = col;
+
+        var hiddenY = document.createElement('input');
+        hiddenY.type = 'hidden';
+        hiddenY.name = 'y';
+        hiddenY.value = row;
+
+        // Append the hidden inputs to the form
+        form.appendChild(hiddenX);
+        form.appendChild(hiddenY);
+
+        // Submit the form to flag the cell
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>

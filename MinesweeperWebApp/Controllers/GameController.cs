@@ -62,6 +62,22 @@ public class GameController : Controller
         return RedirectToAction("Index");
     }
 
+    [HttpPost]
+    public ActionResult FlagCell(int x, int y)
+    {
+        var board = HttpContext.Session.GetObjectFromJson<Board>("Board") ?? new Board(1);
+        var cell = board.Cells[y, x]; 
+
+        if (!cell.IsVisited) 
+        {
+            cell.IsFlagged = !cell.IsFlagged;
+        }
+        HttpContext.Session.SetObjectAsJson("Board", board);
+
+        return RedirectToAction("Index");
+    }
+
+
     public ActionResult RestartGame()
     {
         HttpContext.Session.SetObjectAsJson("Board", new Board(1)); // Default difficulty 1

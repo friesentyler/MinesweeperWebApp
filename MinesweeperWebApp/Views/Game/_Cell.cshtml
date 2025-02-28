@@ -3,7 +3,7 @@
     bool disableButtons = ViewData["DisableButtons"] != null && (bool)ViewData["DisableButtons"];
 }
 
-<td>
+<td oncontextmenu="handleRightClick(event, @Model.Column, @Model.Row)">
     @using (Html.BeginForm("ClickCell", "Game", FormMethod.Post))
     {
         @Html.Hidden("x", Model.Row)
