@@ -28,10 +28,19 @@
         border: none;
         background: transparent;
     }
+
+    #timestamp {
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
 </style>
 
 
 <h2>Minesweeper</h2>
+
+<div id="timestamp">
+    <p>Current Time: <span id="currentTime">@DateTime.Now.ToString("HH:mm:ss")</span></p>
+</div>
 
 <div>
     <p>Score: @Model.score</p>
@@ -50,50 +59,13 @@
             @for (int col = 0; col < Model.Size; col++)
             {
                 var cell = Model.Cells[col, row];
+                var id = $"{col}-{row}";
+                @Html.Partial("_Cell", cell)
+                /*
+                var cell = Model.Cells[col, row];
                 var cellId = $"{col}-{row}"; // Unique ID for each cell
-
-                <td>
-                    <!-- Handle cell clicking via form submission -->
-                    @using (Html.BeginForm("ClickCell", "Game", FormMethod.Post))
-                    {
-                        @Html.Hidden("x", col)
-                        @Html.Hidden("y", row)
-                        <button type="submit" @(disableButtons ? "disabled" : "")>
-                            @if (cell.IsVisited)
-                            {
-                                if (cell.IsBomb)
-                                {
-                                    <img src="~/Assets/bomb.png" alt="bomb" width="50" height="50" />
-                                }
-                                else if (cell.HasSpecialReward)
-                                {
-                                    <img src="~/Assets/flag.png" alt="flag" width="50" height="50" />
-                                }
-                                else
-                                {
-                                    if (cell.NumberOfBombNeighbors > 0)
-                                    {
-                                        Console.WriteLine("here");
-                                        var imageUrl = "~/Assets/" + cell.NumberOfBombNeighbors + ".png";
-                                        <img src="@Url.Content(imageUrl)" alt="@cell.NumberOfBombNeighbors" width="50" height="50" />
-                                    }
-                                    else
-                                    {
-                                        <img src="~/Assets/empty.png" alt="empty" width="50" height="50" />
-                                    }
-                                }
-                            }
-                            else if (cell.IsFlagged)
-                            {
-                                <img src="~/Assets/flag.png" alt="flag" width="50" height="50" />
-                            }
-                            else
-                            {
-                                <img src="~/Assets/unvisited.png" alt="unvisited" width="50" height="50" />
-                            }
-                        </button>
-                    }
-                </td>
+                @Html.Partial("_Cell", cell)
+                */
             }
         </tr>
     }
@@ -106,3 +78,90 @@
     <button type="submit">Restart Game</button>
 }
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+
+    // This function is triggered on right-click
+    function handleLeftClick(event, col, row) {
+        event.preventDefault(); // Prevent default action
+
+        // Get the button's unique ID
+        var buttonId = row + "-" + col; // Assuming your ID format is "col-row"
+
+        $.ajax({
+            type: "POST",
+            url: "/Game/PartialPageUpdate",  // Call controller method
+            data: { id: buttonId },  // Send button ID
+            success: function (data) {
+                if (data.gameOver) {
+                    // If the game is over, redirect to the Win/Lose page
+                    window.location.href = data.redirectUrl;
+                    return; // Stop processing further updates
+                }
+
+                // Loop through all returned partial views
+                Object.keys(data).forEach(cellId => {
+                    var cellTd = $("table td[data-id='" + cellId.trim() + "']"); // Use correct ID
+
+                    if (cellTd.length > 0) {
+                        cellTd.replaceWith(data[cellId]); // Replace the cell correctly
+                    } else {
+                        console.warn("Cell not found for ID:", cellId);
+                    }
+                });
+            },
+
+            error: function (xhr, status, error) {
+                console.error("An error occurred: " + error);
+            }
+        });
+    }
+
+
+    // This function is triggered on right-click
+    function handleRightClick(event, col, row) {
+        event.preventDefault(); // Prevent the default right-click menu
+
+        // Create a form and set it up to flag the cell
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '@Url.Action("FlagCell", "Game")'; // Action to handle flagging
+
+        // Create hidden input fields to pass the cell coordinates
+        var hiddenX = document.createElement('input');
+        hiddenX.type = 'hidden';
+        hiddenX.name = 'x';
+        hiddenX.value = col;
+
+        var hiddenY = document.createElement('input');
+        hiddenY.type = 'hidden';
+        hiddenY.name = 'y';
+        hiddenY.value = row;
+
+        // Append the hidden inputs to the form
+        form.appendChild(hiddenX);
+        form.appendChild(hiddenY);
+
+        // Submit the form to flag the cell
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function updateTimestamp() {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetTimestamp", "Game")',
+            success: function (response) {
+                // Update the timestamp displayed on the page
+                $('#currentTime').text(response);
+            },
+            error: function () {
+                alert("Error retrieving timestamp.");
+            }
+        });
+    }
+
+    // Call the updateTimestamp function every 1 second (1000 milliseconds)
+    setInterval(updateTimestamp, 1000);
+</script>

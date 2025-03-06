@@ -27,5 +27,36 @@ namespace MinesweeperWebApp.Models
             Row = row;
             Column = column;
         }
+
+        public Cell Clone()
+        {
+            return new Cell(this.Row, this.Column)
+            {
+                Row = this.Row,
+                Column = this.Column,
+                IsVisited = this.IsVisited,
+                IsBomb = this.IsBomb,
+                IsFlagged = this.IsFlagged,
+                NumberOfBombNeighbors = this.NumberOfBombNeighbors,
+                HasSpecialReward = this.HasSpecialReward,
+            };
+        }
+
+        // **Equality Check** - Compare two cells
+        public override bool Equals(object obj)
+        {
+            if (obj is not Cell other) return false;
+            return Column == other.Column &&
+                   Row == other.Row &&
+                   IsVisited == other.IsVisited &&
+                   IsBomb == other.IsBomb &&
+                   IsFlagged == other.IsFlagged &&
+                   NumberOfBombNeighbors == other.NumberOfBombNeighbors;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Column, Row, IsVisited, IsBomb, IsFlagged, NumberOfBombNeighbors);
+        }
     }
 }
