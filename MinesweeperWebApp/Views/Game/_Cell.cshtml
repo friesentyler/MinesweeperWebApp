@@ -3,44 +3,46 @@
     bool disableButtons = ViewData["DisableButtons"] != null && (bool)ViewData["DisableButtons"];
 }
 
-<td oncontextmenu="handleRightClick(event, @Model.Column, @Model.Row)">
-    @using (Html.BeginForm("ClickCell", "Game", FormMethod.Post))
-    {
-        @Html.Hidden("x", Model.Row)
-        @Html.Hidden("y", Model.Column)
-        <button type="submit" @(disableButtons ? "disabled" : "")>
-            @if (Model.IsVisited)
+<td data-id="@Model.Column-@Model.Row"
+    onclick="handleLeftClick(event, @Model.Column, @Model.Row)"
+    oncontextmenu="handleRightClick(event, @Model.Column, @Model.Row)">
+
+    @Html.Hidden("x", Model.Row)
+    @Html.Hidden("y", Model.Column)
+    <button type="submit" @(disableButtons ? "disabled" : "")>
+        @if (Model.IsVisited)
+        {
+            if (Model.IsBomb)
             {
-                if (Model.IsBomb)
-                {
-                    <img src="~/Assets/bomb.png" alt="bomb" width="50" height="50" />
-                }
-                else if (Model.HasSpecialReward)
-                {
-                    <img src="~/Assets/reward.png" alt="reward" width="50" height="50" />
-                }
-                else
-                {
-                    if (Model.NumberOfBombNeighbors > 0)
-                    {
-                        var imageUrl = "~/Assets/" + Model.NumberOfBombNeighbors + ".png";
-                        <img src="@Url.Content(imageUrl)" alt="@Model.NumberOfBombNeighbors" width="50" height="50" />
-                    }
-                    else
-                    {
-                        <img src="~/Assets/empty.png" alt="empty" width="50" height="50" />
-                    }
-                }
+                <img src="~/Assets/bomb.png" alt="bomb" width="50" height="50" />
             }
-            else if (Model.IsFlagged)
+            else if (Model.HasSpecialReward)
             {
-                <img src="~/Assets/flag.png" alt="flag" width="50" height="50" />
+                <img src="~/Assets/reward.png" alt="reward" width="50" height="50" />
             }
             else
             {
-                <img src="~/Assets/unvisited.png" alt="unvisited" width="50" height="50" />
+                if (Model.NumberOfBombNeighbors > 0)
+                {
+                    var imageUrl = "~/Assets/" + Model.NumberOfBombNeighbors + ".png";
+                    <img src="@Url.Content(imageUrl)" alt="@Model.NumberOfBombNeighbors" width="50" height="50" />
+                }
+                else
+                {
+                    <img src="~/Assets/empty.png" alt="empty" width="50" height="50" />
+                }
             }
-        </button>
-    }
+        }
+        else if (Model.IsFlagged)
+        {
+            <img src="~/Assets/flag.png" alt="flag" width="50" height="50" />
+        }
+        else
+        {
+            <img src="~/Assets/unvisited.png" alt="unvisited" width="50" height="50" />
+        }
+    </button>
+
 </td>
+
 

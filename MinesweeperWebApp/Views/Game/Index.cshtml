@@ -59,8 +59,13 @@
             @for (int col = 0; col < Model.Size; col++)
             {
                 var cell = Model.Cells[col, row];
+                var id = $"{col}-{row}";
+                @Html.Partial("_Cell", cell)
+                /*
+                var cell = Model.Cells[col, row];
                 var cellId = $"{col}-{row}"; // Unique ID for each cell
                 @Html.Partial("_Cell", cell)
+                */
             }
         </tr>
     }
@@ -76,6 +81,44 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
+
+    // This function is triggered on right-click
+    function handleLeftClick(event, col, row) {
+        event.preventDefault(); // Prevent default action
+
+        // Get the button's unique ID
+        var buttonId = row + "-" + col; // Assuming your ID format is "col-row"
+
+        $.ajax({
+            type: "POST",
+            url: "/Game/PartialPageUpdate",  // Call controller method
+            data: { id: buttonId },  // Send button ID
+            success: function (data) {
+                if (data.gameOver) {
+                    // If the game is over, redirect to the Win/Lose page
+                    window.location.href = data.redirectUrl;
+                    return; // Stop processing further updates
+                }
+
+                // Loop through all returned partial views
+                Object.keys(data).forEach(cellId => {
+                    var cellTd = $("table td[data-id='" + cellId.trim() + "']"); // Use correct ID
+
+                    if (cellTd.length > 0) {
+                        cellTd.replaceWith(data[cellId]); // Replace the cell correctly
+                    } else {
+                        console.warn("Cell not found for ID:", cellId);
+                    }
+                });
+            },
+
+            error: function (xhr, status, error) {
+                console.error("An error occurred: " + error);
+            }
+        });
+    }
+
+
     // This function is triggered on right-click
     function handleRightClick(event, col, row) {
         event.preventDefault(); // Prevent the default right-click menu
