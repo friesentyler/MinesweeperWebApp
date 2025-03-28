@@ -19,6 +19,26 @@ namespace MinesweeperWebApp.Data
             }
         }
 
+        public void saveGame(GameStateModel gameState)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "@INSERT INTO GameState (Id, UserId, DateSaved, GameData) VALUES (@Id, @UserId, @DateSaved, @GameData); SELECT SCOPE_IDENTITY()";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", gameState.Id);
+                    command.Parameters.AddWithValue("@UserId", gameState.UserId);
+                    command.Parameters.AddWithValue("@DateSaved", gameState.DateSaved);
+                    command.Parameters.AddWithValue("@GameData", gameState.GameData);
+
+                    // Execute the query and get the newly inserted ID
+                    object result = command.ExecuteScalar();
+                }
+            }
+        }
+
         public List<GameStateModel> GetAllGames()
         {
             List<GameStateModel> gameStates = new List<GameStateModel>();
