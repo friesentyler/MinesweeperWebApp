@@ -12,7 +12,7 @@ namespace MinesweeperWebApp.Data
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                string query = "DELETE FROM Users WHERE Id = @Id";
+                string query = "DELETE FROM GameState WHERE Id = @Id";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@Id", id);
                 command.ExecuteNonQuery();
