@@ -6,19 +6,19 @@ namespace MinesweeperWebApp.Controllers
     public class GameStorageController : Controller
     {
         [Route("api")]
-        public JsonResult showSavedGames(int? id)
+        public JsonResult ShowSavedGames(int? id)
         {
             return Json("showed");
         }
 
         [HttpPost]
         [Route("api")]
-        public JsonResult deleteOneGame(int id)
+        public JsonResult DeleteOneGame(int id)
         {
             return Json("deleted");
         }
 
-        public IActionResult showSavedGamesView()
+        public IActionResult ShowSavedGamesView()
         {
             return View();
         }

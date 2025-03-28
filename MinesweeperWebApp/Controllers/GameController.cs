@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures; // Make sure you have this for logging
+using MinesweeperWebApp.Data;
 using MinesweeperWebApp.Filters;
 using MinesweeperWebApp.Models;
 
@@ -96,6 +97,23 @@ public class GameController : Controller
     public ActionResult RestartGame()
     {
         HttpContext.Session.SetObjectAsJson("Board", new Board(1)); // Default difficulty 1
+        return RedirectToAction("Index");
+    }
+
+    public ActionResult SaveGame()
+    {
+        GameStateModel model = new GameStateModel();
+        model.GameData = HttpContext.Session.GetSerializedObject<Board>("Board");
+
+        string userJson = HttpContext.Session.GetString("User");
+        if (!string.IsNullOrEmpty(userJson))
+        {
+            var user = ServiceStack.Text.JsonSerializer.DeserializeFromString<UserModel>(userJson);
+            model.UserId = user.Id;
+            model.DateSaved = DateTime.Now; 
+        }
+
+        // SAVE THE GAMESTATE TO THE GAMESTATE DAO 
         return RedirectToAction("Index");
     }
 
