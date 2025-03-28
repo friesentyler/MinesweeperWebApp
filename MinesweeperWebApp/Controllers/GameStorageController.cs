@@ -5,15 +5,15 @@ namespace MinesweeperWebApp.Controllers
 {
     public class GameStorageController : Controller
     {
-        [Route("api")]
-        public JsonResult showSavedGames(int? id)
+        [Route("api/showSavedGames")]
+        public IActionResult showSavedGames(int? id)
         {
             return Json("showed");
         }
 
         [HttpPost]
-        [Route("api")]
-        public JsonResult deleteOneGame(int id)
+        [Route("api/deleteOneGame")]
+        public IActionResult deleteOneGame(int id)
         {
             return Json("deleted");
         }
