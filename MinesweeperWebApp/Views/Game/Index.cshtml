@@ -78,6 +78,12 @@
     <button type="submit">Restart Game</button>
 }
 
+<!-- Button to restart the game -->
+@using (Html.BeginForm("SaveGame", "Game", FormMethod.Post))
+{
+    <button type="submit">Save Game</button>
+}
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
