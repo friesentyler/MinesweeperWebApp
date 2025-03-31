@@ -5,15 +5,18 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures; // Make sure you have this for logg
 using MinesweeperWebApp.Data;
 using MinesweeperWebApp.Filters;
 using MinesweeperWebApp.Models;
+using ServiceStack;
 
 
 public class GameController : Controller
 {
     private readonly ICompositeViewEngine _viewEngine;
+    private GameStorageServiceDAO _gameStorageService;
 
     public GameController(ICompositeViewEngine viewEngine)
     {
         _viewEngine = viewEngine;
+        _gameStorageService = new GameStorageServiceDAO();
     }
 
 
@@ -36,6 +39,7 @@ public class GameController : Controller
     {
         var board = new Board(difficulty);
         HttpContext.Session.SetObjectAsJson("Board", board);
+        HttpContext.Session.Remove("GameId");
         return RedirectToAction("Index");
     }
 
@@ -103,17 +107,38 @@ public class GameController : Controller
     public ActionResult SaveGame()
     {
         GameStateModel model = new GameStateModel();
+
         model.GameData = HttpContext.Session.GetSerializedObject<Board>("Board");
 
-        string userJson = HttpContext.Session.GetString("User");
-        if (!string.IsNullOrEmpty(userJson))
+        int? gameId = HttpContext.Session.GetString("GameId").ToInt(); 
+        
+        Console.WriteLine(gameId.ToString());
+
+        if (gameId == 0)
         {
-            var user = ServiceStack.Text.JsonSerializer.DeserializeFromString<UserModel>(userJson);
-            model.UserId = user.Id;
-            model.DateSaved = DateTime.Now; 
+            string userJson = HttpContext.Session.GetString("User");
+            if (!string.IsNullOrEmpty(userJson))
+            {
+                var user = ServiceStack.Text.JsonSerializer.DeserializeFromString<UserModel>(userJson);
+                model.UserId = user.Id;
+                model.DateSaved = DateTime.Now;
+            }
+
+            _gameStorageService.saveGame(model);
+        }
+        else
+        {
+            string userJson = HttpContext.Session.GetString("User");
+            if (!string.IsNullOrEmpty(userJson))
+            {
+                var user = ServiceStack.Text.JsonSerializer.DeserializeFromString<UserModel>(userJson);
+                model.UserId = user.Id;
+                model.DateSaved = DateTime.Now;
+                model.Id = (int)gameId;
+            }
+            _gameStorageService.updateGame(model);
         }
 
-        // SAVE THE GAMESTATE TO THE GAMESTATE DAO 
         return RedirectToAction("Index");
     }
 

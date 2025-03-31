@@ -1,8 +1,5 @@
 ﻿@model IEnumerable<MinesweeperWebApp.Models.GameStateModel>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -16,32 +13,34 @@
                 @Html.DisplayNameFor(model => model.DateSaved)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.GameData)
+                <h5>Play</h5>
             </th>
-            <th></th>
+            <th>
+                <h5>Delete</h5>
+            </th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateSaved)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GameData)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
+        @foreach (var game in Model)
+        {
+            <tr>
+                <td>@game.Id</td>
+                <td>@game.UserId</td>
+                <td>@game.DateSaved.ToString("g")</td>
+                <td>
+                    <form asp-controller="GameStorage" asp-action="ResumeGame" method="post">
+                        <input type="hidden" name="id" value="@game.Id" />
+                        <button type="submit" class="btn btn-primary">Resume Game</button>
+                    </form>
+                </td>
+                <td>
+                    <form asp-controller="GameStorage" asp-action="Delete" method="post">
+                        <input type="hidden" name="id" value="@game.Id" />
+                        <button type="submit" class="btn btn-primary">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+
     </tbody>
 </table>

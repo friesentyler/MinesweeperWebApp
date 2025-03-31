@@ -6,8 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 // COMMENT AND UNCOMMENT AS NEEDED 
 // TO TOGGLE BETWEEN USER DAO AND USER COLLECTION FOR NON-DB TESTING
 
-builder.Services.AddSingleton<IUserManager, UserCollection>();
-//builder.Services.AddSingleton<IUserManager, UserDAO>();
+//builder.Services.AddSingleton<IUserManager, UserCollection>();
+builder.Services.AddSingleton<IUserManager, UserDAO>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

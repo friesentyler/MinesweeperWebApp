@@ -19,16 +19,36 @@ namespace MinesweeperWebApp.Data
             }
         }
 
+        public void updateGame(GameStateModel gameState)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string query = "UPDATE GameState SET userId = @UserId, dateSaved = @DateSaved, gameState = @GameData WHERE Id = @Id";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", gameState.Id);
+                    command.Parameters.AddWithValue("@UserId", gameState.UserId);
+                    command.Parameters.AddWithValue("@DateSaved", gameState.DateSaved);
+                    command.Parameters.AddWithValue("@GameData", gameState.GameData);
+
+                    command.ExecuteNonQuery(); // No result expected
+                }
+            }
+        }
+
+
         public void saveGame(GameStateModel gameState)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                string query = "@INSERT INTO GameState (Id, UserId, DateSaved, GameData) VALUES (@Id, @UserId, @DateSaved, @GameData); SELECT SCOPE_IDENTITY()";
+                string query = "INSERT INTO GameState (userId, dateSaved, gameState) VALUES (@UserId, @DateSaved, @GameData); SELECT SCOPE_IDENTITY()";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@Id", gameState.Id);
                     command.Parameters.AddWithValue("@UserId", gameState.UserId);
                     command.Parameters.AddWithValue("@DateSaved", gameState.DateSaved);
                     command.Parameters.AddWithValue("@GameData", gameState.GameData);
@@ -54,9 +74,9 @@ namespace MinesweeperWebApp.Data
                     GameStateModel gameState = new GameStateModel
                     {
                         Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                        UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
-                        DateSaved = reader.GetDateTime(reader.GetOrdinal("DateSaved")),
-                        GameData = reader.GetString(reader.GetOrdinal("GameData")),
+                        UserId = reader.GetInt32(reader.GetOrdinal("userId")),
+                        DateSaved = reader.GetDateTime(reader.GetOrdinal("dateSaved")),
+                        GameData = reader.GetString(reader.GetOrdinal("gameState")),
                     };
                     gameStates.Add(gameState);
                 }
@@ -80,9 +100,9 @@ namespace MinesweeperWebApp.Data
                     return new GameStateModel 
                     {
                         Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                        UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
-                        DateSaved = reader.GetDateTime(reader.GetOrdinal("DateSaved")),
-                        GameData = reader.GetString(reader.GetOrdinal("GameData")),
+                        UserId = reader.GetInt32(reader.GetOrdinal("userId")),
+                        DateSaved = reader.GetDateTime(reader.GetOrdinal("dateSaved")),
+                        GameData = reader.GetString(reader.GetOrdinal("gameState")),
                     };
                 }
             }
